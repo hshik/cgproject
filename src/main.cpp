@@ -1,4 +1,5 @@
 #include "spdlog/spdlog.h"
+#include <glad/glad.h>
 #include "GLFW/glfw3.h"
 
 
@@ -18,6 +19,20 @@ int main(int argc, const char** argv)
 
   SPDLOG_INFO("Create glfw window");
   auto window = glfwCreateWindow(WINDOW_WIDTH, WINDOW_HEIGHT, WINDOW_NAME, nullptr, nullptr);   //4번째인자 nullptr은 모니터선택 5번째인자는 다른윈도우를 쓸것인지 선택부분 auto로 받게되면 glfwCreatewindow의 리턴값으로 알아서 받는것(c++11부터 지원)
+  
+
+  glfwMakeContextCurrent(window);
+
+  if(!gladLoadGLLoader((GLADloadproc)glfwGetProcAddress))    //opengl함수를 로딩
+  {
+    SPDLOG_ERROR("FAILED TO INITIALIZE GLAD");
+    glfwTerminate();
+    return -1;
+  }
+  auto glVersion = glGetString(GL_VERSION);
+  SPDLOG_INFO("OpenGL context version : {}", glVersion);
+
+
   if(!window)
   {
     SPDLOG_ERROR("FAIED TO CREATE GLFW WINDOW");
@@ -32,6 +47,12 @@ int main(int argc, const char** argv)
     glfwPollEvents();								//키보드, 마우스 입력/ 창의 변경 등의 이벤트 발생을 수집 1/60초 동안 이벤트 수집해서 초단위 동작
   }
   glfwTerminate();
+
+
+  glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
+  glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
+  glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
+
 
   return 0;
 }
