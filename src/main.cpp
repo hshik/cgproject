@@ -4,7 +4,7 @@
 
 int main(int argc, const char** argv)
 {
-  SPDLOG_INFO("START PROGRAM");
+  SPDLOG_INFO("START PROGRAM!!!");
 
   SPDLOG_INFO("Initialize glfw");
   if(!glfwInit())									//glfw라이브러러리를 초기화
