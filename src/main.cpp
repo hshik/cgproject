@@ -1,6 +1,12 @@
+#include "context.h"
+#include "common.h"
+#include "shader.h"
+#include "program.h"
+
 #include "spdlog/spdlog.h"
 #include <glad/glad.h>
 #include "GLFW/glfw3.h"
+
 
 
 void OnFramebufferSizeChange(GLFWwindow* window, int width, int height)
@@ -57,7 +63,20 @@ int main(int argc, const char** argv)
   auto glVersion = glGetString(GL_VERSION);
   SPDLOG_INFO("OpenGL context version : {}", glVersion);
 
+  glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
+  glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
+  glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
 
+  auto context = Context::Create();
+  if (!context)
+  {
+    SPDLOG_ERROR("FAILED TO CREATE CONTEXT");
+    glfwTerminate();
+    return -1;
+  }
+
+
+  OnFramebufferSizeChange(window, WINDOW_WIDTH, WINDOW_HEIGHT);
   glfwSetFramebufferSizeCallback(window,OnFramebufferSizeChange);
   glfwSetKeyCallback(window, OnKeyEvent);
 
@@ -72,16 +91,18 @@ int main(int argc, const char** argv)
   while(!glfwWindowShouldClose(window))			//닫아햐합니까? 라고 묻는 함수. true가 반환되면 while문 종료
   {
     glfwPollEvents();								//키보드, 마우스 입력/ 창의 변경 등의 이벤트 발생을 수집 1/60초 동안 이벤트 수집해서 초단위 동작
-    glClearColor(0.0f,0.1f,0.2f,0.0f);
-    glClear(GL_COLOR_BUFFER_BIT);
+   
+    context->Render(); 
+   
     glfwSwapBuffers(window);
   }
+
+  context.reset();
+
   glfwTerminate();
 
 
-  glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
-  glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
-  glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
+
 
 
   return 0;
